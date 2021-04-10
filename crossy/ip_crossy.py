@@ -9,7 +9,7 @@ from lafienc import laboriously_find_encoding
 from snarfy import snarf
 from neo4j_secretary import n4j
 
-def path_look(path):
+def file_look(path):
   global verbose
   global recursive
   global tagged
@@ -19,7 +19,6 @@ def path_look(path):
   if os.path.isfile(path):
     snarf_file = True
     if len(exts) > 0:
-      print(f">>>>{os.path.splitext(path)}")
       if os.path.splitext(path)[1] not in exts:
         snarf_file = False
         print(f"  {os.path.basename(path)} extension not in the list you provided; skipping")
@@ -35,17 +34,16 @@ def path_look(path):
       if safe_enc != None:
         snf.file(path, safe_enc, args)
 
-  elif recursive:
-    for root, dirs, files in os.walk(path):
-      if verbose:
-        print(f"recursing into dir {path}")
-      for name in dirs:
-        path_look(os.path.join(root, name))
-  
+def get_all_files(path):
+  paths = set()
+  for root, dirs, files in os.walk(path):
+    for f in files:
+      paths.add(os.path.join(root, f))
+  return(paths)
+
 if __name__=="__main__":
   parser = argparse.ArgumentParser(description="reads text from files and looks for common strings between them; looks for email/jabber/telegram, ipv4/6, and ... strings")
   parser.add_argument("--path", "-p", help="input file or directory", nargs="*", action="append")
-  parser.add_argument("--recursive", "-r", help="recursively look into dirs", action="store_true")
   parser.add_argument("--get_ips", "-i", help="parse for IPv4 and IPv6", action="store_true")
   parser.add_argument("--get_paths", "-g", help="parse for file path-ish strings", action="store_true")
   parser.add_argument("--get_emails", "-e", help="parse for email-ish strings", action="store_true")
@@ -58,26 +56,26 @@ if __name__=="__main__":
   parser.add_argument("--exts", help="only look at files with these extensions", nargs="*", action="append")
   args = parser.parse_args()
   verbose = args.verbose
-  recursive = args.recursive
   tagged = args.tagged
   
   exts = set()
   if args.exts != None:
     for ext_list in args.exts:
       exts |= set(ext_list)
-      
-  print(f"here's the exts {exts}")
 
   snf = snarf(args.print_all)
   lfe = laboriously_find_encoding(verbose)
   
+  file_set = set()
   for file_list in args.path:
-    print(f"this is the file_list {file_list}")
     for local_path in file_list:
-    
-      print(f"this is the path i see {local_path}")
-    
-      path_look(local_path)
+      if os.path.isfile(local_path):
+        file_set.add(local_path)
+      elif os.path.isdir(local_path):
+        file_set |= get_all_files(local_path)
+  
+  for file in file_set:
+    file_look(file)
 
   if args.csv:
     print(snf.csv())
