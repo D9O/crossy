@@ -36,10 +36,10 @@ def path_look(path):
         snf.file(path, safe_enc, args)
 
   elif recursive:
-    if verbose:
-      print(f"recursing into dir {path}")
     for root, dirs, files in os.walk(path):
-      for name in files:
+      if verbose:
+        print(f"recursing into dir {path}")
+      for name in dirs:
         path_look(os.path.join(root, name))
   
 if __name__=="__main__":
