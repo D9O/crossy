@@ -1,0 +1,20 @@
+#ADOBE
+  .pdf
+#OFFICE
+  .doc .docx
+  .ppt .pptx
+  .xls .xlsx
+#GRAPHICS
+  .bmp
+  .jpg .jpeg .jpe .jif .jfif .jfi
+  .png
+  .psd
+  .gif
+  .tif .tiff
+  .webp
+#COMPRESSION
+  .gz .tar .zip
+#SOUND
+  .wav .mp3
+#OTHER NO-GO's
+  .dmg .sks
