@@ -6,7 +6,7 @@ This script reads the text from files in a directory and stores and visualizes w
 ----------------------------------
 To get an initial understanding of how the script works, consider the following directory:
 
-    .
+    test
     ├── file1.txt
     ├── file2.txt
     └── subdirectory
