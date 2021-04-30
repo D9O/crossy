@@ -109,7 +109,7 @@ class snarf:
     return(nugget_set)
 
   #this identifies IPs amongst the nuggets.  Doing it this way is worth the
-  #overhead because it works better than regex, in my own expierences.
+  #overhead because it works better than regex, in my own experience.
   def snarf_ips(self, nugs):
     ips = set()
     for nug in nugs:

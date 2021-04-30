@@ -162,9 +162,9 @@ The following yaml signature will look through every document in the search dire
       string: gmail
       case_sensitive: False
 
-Line-by-line, here is how the signature works.  **ALL KEYS (the words to the left of the colon (:) ) MUST BE UNCHANGED AND PRESENT FOR YOUR YAML SIGNATURE TO WORK.**
+Line-by-line, here is how the signature works.  The first key is customizable.  The sub-keys _description:_, _string:_, and _case_sensitive:_ are not and must be in every string search yaml signature.
 
-    str_gmail: << this value can be anything; it should describe what you're searching for.  It will show up as a "Node Label" if you push the data into neo4j (discussed further down).
+    str_gmail: << this key can be anything; it should describe what you're searching for.  It will show up as a "Node Label" if you push the data into neo4j (discussed further down).
 
       description: anything can go here; use this field to describe what the yaml sig is supposed to do...
 
@@ -179,15 +179,15 @@ Line-by-line, here is how the signature works.  **ALL KEYS (the words to the lef
       args_tiein: get_phones
       regex: ^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$
   
-As with string searches, the keys must be kept exactly as shown in the block above.  Line-by-line, here is how the signature works:
+As with string searches, the top key (here "FON1") is customizable, but the sub-keys must be kept exactly as shown in the block above.  Line-by-line, here is how the signature works:
 
-    FON1: << this value can be anything, as for the string search.  Short values work nicely due to how neo4j visualizes the data.
+    FON1: << this value can be anything; short values work nicely due to how neo4j visualizes the data.
              
       description: << same as above.
       
-      args_tiein: << This is complex and will be skipped for now.
+      args_tiein: << this is more complex and will be skipped for now.
       
-      regex: << the regex goes here.  The script reads the value as a raw string so there is no need to escape backslashes.
+      regex: << the regex goes here; the script reads the value as a raw string, so there is no need to escape backslashes.
             
 The **args_tiein** key is used to link yaml signature patterns to the following command line arguments:
 
@@ -199,7 +199,7 @@ The **args_tiein** key is used to link yaml signature patterns to the following 
 
 In the yaml block **FON1** above, the line **args_tiein: get_phones** ties the yaml signature to the command line argument **--get_phones**.  I.e., if the user adds the --get_phones flag to their search, then the yaml signature will execute and the regex will be searched.  If the --get_phones flag is not included, then this yaml signature will not be searched.
 
-If you add a new yaml pattern search, you must tie it to a command line argument, or the yaml signature will never get searched.  If in doubt, just use the following:
+If you add a new yaml pattern search, you must tie it to a command line argument, or the yaml signature will never be searched for.  If in doubt, just use the following:
   
       args_tiein: get_misc
 

@@ -9,7 +9,7 @@ from lafienc import laboriously_find_encoding
 from snarfy import snarf
 from neo4j_secretary import n4j
 
-#this traverses directoriess and selects files for loading based on the command
+#this traverses directories and selects files for loading based on the command
 #line args provided by the user
 def file_look(path):
   global verbose
@@ -82,10 +82,10 @@ if __name__=="__main__":
     for ext_list in args.exts:
       exts |= set(ext_list)
 
-  #this intializes snarfy.py to run; starfy does the work of finding stings
+  #this initializes snarfy.py to run; snarfy.py does the work of finding stings
   #patterns and matches between documents.
   snf = snarf(args.print_all, args.yaml)
-  #this finds a safe enocoding to open a file with.  It is ugly, but works.
+  #this finds a safe encoding to open a file with.  It is ugly, but works.
   lfe = laboriously_find_encoding(verbose)
   
   #this creates the set of all the files in a directory
@@ -109,7 +109,7 @@ if __name__=="__main__":
   else:
     print(f"{snf}")
   
-  #if the user wants to push data into neo4j for visualiztion, this does that.
+  #if the user wants to push data into neo4j for visualization, this does that.
   if args.neo4j:
     n = n4j(snf, verbose)
     n.store()

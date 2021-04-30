@@ -39,11 +39,11 @@ class laboriously_find_encoding:
       try:
         #tl;dr- Whatever the time cost of this is, it works.
         #
-        #Algorythm:
+        #Algorithm:
         #  - open a file, read each line until the end as fast as possible
         #  - if no exceptions are raised, this encoding may or may not be correct,
         #    but it is safe to open using it.
-        #  - the method is greedy, on the first successful comptletion, it
+        #  - the method is greedy, on the first successful completion, it
         #    returns that encoding
         #    -- due to this, the order of encodings impacts speed; arrange them
         #       in descending order from most likely to least and don't use a set
@@ -55,5 +55,5 @@ class laboriously_find_encoding:
       except:
         continue
     if self.verbose:
-      print(f" {Fore.RED}{Style.BRIGHT}encoding insantiy...not able to safely open{Style.RESET_ALL}")
+      print(f" {Fore.RED}{Style.BRIGHT}encoding insanity...not able to safely open{Style.RESET_ALL}")
     return None
