@@ -95,8 +95,9 @@ With the usage examples above in mind, here are all the options the script provi
                         [--tagged] [--print_all] [--exts [EXTS [EXTS ...]]]
                         [--yaml [YAML [YAML ...]]]
 
-    reads text from files and looks for common strings between them; looks for
-    email/jabber/telegram, ipv4/6, and ... strings
+    reads text from files and looks for common strings between them; tags for
+    emails, telephone numbers, GUIDs, ipv4/6, and strings; customize your pattern
+    searches via yaml signatures (see README.md)
 
     optional arguments:
       -h, --help            show this help message and exit
