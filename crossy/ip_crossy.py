@@ -44,9 +44,12 @@ def get_all_files(path):
 if __name__=="__main__":
   parser = argparse.ArgumentParser(description="reads text from files and looks for common strings between them; looks for email/jabber/telegram, ipv4/6, and ... strings")
   parser.add_argument("--path", "-p", help="input file or directory", nargs="*", action="append")
-  parser.add_argument("--get_ips", "-i", help="parse for IPv4 and IPv6", action="store_true")
-  parser.add_argument("--get_paths", "-g", help="parse for file path-ish strings", action="store_true")
-  parser.add_argument("--get_emails", "-e", help="parse for email-ish strings", action="store_true")
+  parser.add_argument("--get_ips", help="parse for IPv4 and IPv6", action="store_true")
+  parser.add_argument("--get_urls", help="parse for url-ish strings", action="store_true")
+  parser.add_argument("--get_emails", help="parse for email-ish strings", action="store_true")
+  parser.add_argument("--get_phones", help="parse for phone numbers", action="store_true")
+  parser.add_argument("--get_financial", help="parse for credit cards, btc addresses", action="store_true")
+  parser.add_argument("--get_misc", help="parse for other stuff (e.g. lat,long; MAC address; )", action="store_true")
   parser.add_argument("--get_all", "-a", help="store every word found", action="store_true")
   parser.add_argument("--verbose", "-v", help="prints much more to the screen; e.g. which files are skipped in a directory", action="store_true")
   parser.add_argument("--neo4j", help="put data into a neo4j database for visualization", action="store_true")
@@ -54,16 +57,22 @@ if __name__=="__main__":
   parser.add_argument("--tagged", help="only look at files that start with '_N_'", action="store_true")
   parser.add_argument("--print_all", help="print every nugget found", action="store_true")
   parser.add_argument("--exts", help="only look at files with these extensions", nargs="*", action="append")
+  parser.add_argument("--yaml", "-y", help="load a yaml signature file",
+    nargs="*", action="append")
   args = parser.parse_args()
   verbose = args.verbose
   tagged = args.tagged
+  
+  if (args.get_urls or args.get_emails or args.get_phones or args.get_financial or args.get_misc):
+    if args.yaml == None:
+      sys.exit("No signature file was provided.  Without the signature file, all I can look for is IPv4 and IPv6.  The default signature files is sigs.yaml")
   
   exts = set()
   if args.exts != None:
     for ext_list in args.exts:
       exts |= set(ext_list)
 
-  snf = snarf(args.print_all)
+  snf = snarf(args.print_all, args.yaml)
   lfe = laboriously_find_encoding(verbose)
   
   file_set = set()

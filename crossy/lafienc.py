@@ -45,7 +45,7 @@ class laboriously_find_encoding:
         #  - the method is greedy, on the first successful comptletion, it
         #    returns that encoding
         #    -- due to this, the order of encodings impacts speed; arrange them
-        #       in descending order from most likely to least
+        #       in descending order from most likely to least and don't use a set
         for line in open(path, 'r', encoding=e):
           pass
         if self.verbose:

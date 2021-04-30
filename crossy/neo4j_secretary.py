@@ -8,6 +8,7 @@ class n4j:
     self.snarf_class = snarf_class
     self.verbose = verbosity
   
+  #this function pushes the data in memory into neo4j for visualization
   def store(self):
     for fpath in self.snarf_class.doc2nug.keys():
       if self.check_file(fpath):
