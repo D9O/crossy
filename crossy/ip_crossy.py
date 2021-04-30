@@ -47,7 +47,7 @@ def get_all_files(path):
   return(paths)
 
 if __name__=="__main__":
-  parser = argparse.ArgumentParser(description="reads text from files and looks for common strings between them; looks for email/jabber/telegram, ipv4/6, and ... strings")
+  parser = argparse.ArgumentParser(description="reads text from files and looks for common strings between them; tags for emails, telephone numbers, GUIDs, ipv4/6, and strings; customize your pattern searches via yaml signatures (see README.md)")
   parser.add_argument("--path", "-p", help="input file or directory", nargs="*", action="append")
   parser.add_argument("--get_ips", help="parse for IPv4 and IPv6", action="store_true")
   parser.add_argument("--get_urls", help="parse for url-ish strings", action="store_true")
