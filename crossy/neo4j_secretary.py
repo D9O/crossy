@@ -34,9 +34,11 @@ class n4j:
           if self.verbose:
             print(f"  added {nugget} to {fpath}")
   
+  #this checks to see if a file is already represented in the database instance
   def check_file(self, fpath):
     return self.graph.nodes.match("File", path=fpath).exists()
-
+    
+  #this checks to see if a "nugget" is already represented
   def check_nug(self, nugget):
     return self.graph.nodes.match(nugget.get_type(), letters=nugget.get_value()).exists()
         

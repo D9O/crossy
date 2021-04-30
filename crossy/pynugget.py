@@ -1,3 +1,9 @@
+#every word scraped from a document is stored as a nugget, using this class
+#self._type and self._value are the main parts.  An example would be:
+#
+#self._value = 123.123.123.123
+#self._type = IPV4
+
 class nugget:
   def __init__(self, typ, val):
     self._type = typ
@@ -16,8 +22,13 @@ class nugget:
     return not self.__eq__(other)
   def __hash__(self):
     return hash(self._value) #doing it this way cuts down on one value which
-                             #hits on multiple types from being added more
-                             #than once.
+                             #hits on multiple types (e.g. jabber handles versus
+                             #twitter handles, which both share format of
+                             #@some-annoying-name) from being added more
+                             #than once.  Its greedy, if @some-annoying-name is
+                             #tagged as a jabber id, then seen as a twitter id,
+                             #the titter tag is not created.  Neo4j gets
+                             #incomprehensible when I try other solutions...
   def csv(self):
     return f'"{self._type}","{self._value}"'
   def get_type(self):

@@ -197,9 +197,9 @@ The **args_tiein** key is used to link yaml signature patterns to the following 
       --get_financial       parse for credit cards, btc addresses
       --get_misc            parse for other stuff (e.g. lat,long; MAC address; )
 
-In the yaml block above above, the line **args_tiein: get_phones** ties the yaml signature to the command line argument **--get_phones**.  I.e., if the user adds the --get_phones flag to their search, then the yaml signature will execute and the regex will be searched.  If the --get_phones flag is not included, then this yaml signature will not be searched.
+In the yaml block **FON1** above, the line **args_tiein: get_phones** ties the yaml signature to the command line argument **--get_phones**.  I.e., if the user adds the --get_phones flag to their search, then the yaml signature will execute and the regex will be searched.  If the --get_phones flag is not included, then this yaml signature will not be searched.
 
-Any of the command line args shown above can be used, with **--get_misc** being a catch-all. If you add a new yaml pattern search, you must tie it to a command line argument, or the yaml signature will never get searched.  If in doubt, just use the following:
+If you add a new yaml pattern search, you must tie it to a command line argument, or the yaml signature will never get searched.  If in doubt, just use the following:
   
       args_tiein: get_misc
 

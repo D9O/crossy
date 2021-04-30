@@ -1,19 +1,3 @@
-#tl;dr- snarf is the tricky part.
-#
-#The algorythm is:
-# - open a file with a safe encoding
-# - for each line in the file:
-#   -- break the line into "nuggets"--discreet chunks of text which may contain
-#      a value I care about--using whitespace
-#   -- analyze each nugget and store the ones which get tagged; tag options are:
-#      --- IPv4, IPv6 (very accurate results)
-#      --- email-ish strings (medium junk to useful ratio)
-#      --- path/url-ish strings (high junk to useful ratio)
-#      --- there is the option to store every word found
-#   -- store the data into dictionaries where I can pivot from word to file and
-#      vice versa
-
-
 import ipaddress
 import yaml
 import re
@@ -28,6 +12,9 @@ colorama.init()
 
 from pynugget import nugget
 
+#this class reads through each word in a document creates a tagged "nugget" of
+#data, per the user's command line arguments (e.g. it will find IPs, or emails,
+#or btc addresses).
 class snarf:
   def __init__(self, print_arg, yaml_files):
     self.print_all = print_arg
@@ -65,8 +52,9 @@ class snarf:
         for doc in docs:
           output += f"  {doc}\n"
     return output
-
-  def csv(self): #print for use in an Excel pivot table
+  
+  #print for use in an Excel pivot table
+  def csv(self):
     output = '\n\n"TYPE","VALUE","FILE"\n'
     for nugget, docs in self.nug2doc.items():
       if self.print_all or len(docs) > 1:
@@ -74,7 +62,7 @@ class snarf:
           output += f'{nugget.csv()},"{doc}"\n'
     return output
 
-
+  #open a file with a safe encoding
   def file(self, path, safe_enc, args):
     if path not in self.doc2nug.keys():
       self.doc2nug[path] = set()
@@ -86,6 +74,7 @@ class snarf:
         self.nug2doc[nug] = set()
       self.nug2doc[nug].add(path)
       
+  #this is where words (nuggets) are tagged as email, ipv4, ipv6, etc etc
   def process_row(self, row, args):
     snarfed = set()
     if len(self.yaml_sigs) > 0:
@@ -119,14 +108,13 @@ class snarf:
         nugget_set.add(nug)
     return(nugget_set)
 
+  #this identifies IPs amongst the nuggets.  Doing it this way is worth the
+  #overhead because it works better than regex, in my own expierences.
   def snarf_ips(self, nugs):
     ips = set()
     for nug in nugs:
       try:
-        ip = ipaddress.ip_address(nug)  #built-in python function works
-                                        #better than regex and is worth the
-                                        #overhead of make_nuggets()
-                                        
+        ip = ipaddress.ip_address(nug)
         if ip.is_loopback:              #these IPs not what I'm looking for...
           continue
         
@@ -138,22 +126,27 @@ class snarf:
         continue
     return ips
 
+  #if you want to create a graph of every word in each document, this
+  #is the part that does it.
   def snarf_all(self, nugs):
     all = set()
     for nug in nugs:
       all.add(nugget("WORD", nug))
     return all
-    
+  
+  #this determines which yaml signatures to run, based on the command line
+  #arguments the user provided
   def snarf_yaml(self, row, args):
+    #this part handles pattern searches
     return_val = set()
     for rule in self.yaml_sigs["regexes"]:
-      if f"{rule['args_tiein']}=True" in f"{args}":
+      if f"{rule['args_tiein']}=True" in f"{args}": #very hacky, but it works
         hits = rule["regex"].finditer(row)
         if hits == None:
           continue
         for hit in hits:
           return_val.add(nugget(rule["rule_name"], hit.group()))
-        
+    #this part handles string searches
     for rule in self.yaml_sigs["strings"]:
       for rule_name, rule_details in rule.items():
         if rule_details["case_sensitive"] == False:

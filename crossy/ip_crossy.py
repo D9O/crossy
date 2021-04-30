@@ -1,6 +1,6 @@
 import os
 import sys
-import yaml # $pip3 install pyyaml
+import yaml
 import pprint
 import argparse
 
@@ -9,6 +9,8 @@ from lafienc import laboriously_find_encoding
 from snarfy import snarf
 from neo4j_secretary import n4j
 
+#this traverses directoriess and selects files for loading based on the command
+#line args provided by the user
 def file_look(path):
   global verbose
   global recursive
@@ -21,7 +23,8 @@ def file_look(path):
     if len(exts) > 0:
       if os.path.splitext(path)[1] not in exts:
         snarf_file = False
-        print(f"  {os.path.basename(path)} extension not in the list you provided; skipping")
+        if verbose:
+          print(f"  {os.path.basename(path)} extension not in the list you provided; skipping")
     if tagged:
       if os.path.basename(path)[:3] != "_N_":
         snarf_file = False
@@ -32,8 +35,10 @@ def file_look(path):
         print(f"  searching in file {path}", end = "")
       safe_enc = lfe.get_safe_enc(path)
       if safe_enc != None:
+        # THIS IS WHERE CONTROL GOES TO SNARFY.PY AND THE WORK IS BEGUN
         snf.file(path, safe_enc, args)
 
+#this gets a list of files in a directory
 def get_all_files(path):
   paths = set()
   for root, dirs, files in os.walk(path):
@@ -63,18 +68,27 @@ if __name__=="__main__":
   verbose = args.verbose
   tagged = args.tagged
   
+  #anything other than ipv4 and ipv6 requires a yaml signature, this
+  #checks that this requirement is met.
   if (args.get_urls or args.get_emails or args.get_phones or args.get_financial or args.get_misc):
     if args.yaml == None:
       sys.exit("No signature file was provided.  Without the signature file, all I can look for is IPv4 and IPv6.  The default signature files is sigs.yaml")
   
+  #this gathers command-line provided file extensions the user provided
+  #that should be read (e.g. if the user only wanted to look at .csv and .txt
+  #files in a directory)
   exts = set()
   if args.exts != None:
     for ext_list in args.exts:
       exts |= set(ext_list)
 
+  #this intializes snarfy.py to run; starfy does the work of finding stings
+  #patterns and matches between documents.
   snf = snarf(args.print_all, args.yaml)
+  #this finds a safe enocoding to open a file with.  It is ugly, but works.
   lfe = laboriously_find_encoding(verbose)
   
+  #this creates the set of all the files in a directory
   file_set = set()
   for file_list in args.path:
     for local_path in file_list:
@@ -83,23 +97,22 @@ if __name__=="__main__":
       elif os.path.isdir(local_path):
         file_set |= get_all_files(local_path)
   
+  #this goes through each file found above, and if it's something the user
+  #wants to look at, it is scraped for data via snarfy.py
   for file in file_set:
     file_look(file)
 
+  #if the user wants csv output for an excel pivot table, this does it.
   if args.csv:
     print(snf.csv())
+  #otherwise, a "normal" printout of the results is created
   else:
     print(f"{snf}")
   
+  #if the user wants to push data into neo4j for visualiztion, this does that.
   if args.neo4j:
     n = n4j(snf, verbose)
     n.store()
 
-'''
-This query in neo4j will show all the nuggets with > 1 connection:
-MATCH ()-[r]->(n)
-WITH n, count(r) as rel_cnt
-WHERE rel_cnt > 1
-RETURN ()-[]->(n)
-'''
+  #the end.
 
